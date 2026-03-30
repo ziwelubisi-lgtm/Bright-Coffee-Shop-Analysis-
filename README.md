@@ -11,5 +11,5 @@ The following steps were taken to execute the project
 - Brainstorming ideas using MIRO
 - Data processing using DATABRICKS
 
-### Summary of the results 
+
 

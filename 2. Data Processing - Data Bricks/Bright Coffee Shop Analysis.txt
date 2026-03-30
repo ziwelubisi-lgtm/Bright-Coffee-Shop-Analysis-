@@ -1,0 +1,109 @@
+------------------------------------------------------------
+-- BRIGHT COFFEE SHOP CODING 
+------------------------------------------------------------
+-- 1. Running the entire table 
+SELECT * 
+FROM workspace.default.bright_coffee_shop_;
+
+--- 2. Checking the date range 
+SELECT 
+      MIN(transaction_date) AS minimum_date,
+        MAX(transaction_date) AS maximum_date 
+        FROM workspace.default.bright_coffee_shop_;
+
+---3. Checking the different store locations 
+SELECT DISTINCT
+        store_location
+        FROM workspace.default.bright_coffee_shop_;
+
+---4. Checking the products sold at our stores - 9 different product categories
+SELECT DISTINCT
+        product_category
+        FROM workspace.default.bright_coffee_shop_;
+
+---5. Checking the product types -29 different products
+SELECT DISTINCT
+        product_type
+        FROM workspace.default.bright_coffee_shop_;
+
+---6. Checking the product detail - 80 Different product categories
+SELECT DISTINCT
+        product_detail
+        FROM workspace.default.bright_coffee_shop_;
+---7. Checking NULL values
+SELECT * 
+FROM workspace.default.bright_coffee_shop_
+WHERE unit_price IS NULL
+OR transaction_qty IS NULL 
+OR transaction_date IS NULL ;
+
+---8. Checking Maximum and Minimum Unit Price 
+SELECT
+      MAX(unit_price) AS maximum_price,
+      MIN(unit_price) AS minimum_price
+      FROM workspace.default.bright_coffee_shop_;
+
+---9. Extracting the Day Name and Month Name 
+SELECT 
+transaction_date,
+      Dayname(transaction_date) AS Day_name,
+      Monthname(transaction_date) AS Month_name
+      FROM workspace.default.bright_coffee_shop_;
+
+---10. Calculate Revenue 
+SELECT 
+        unit_price, 
+        transaction_qty, 
+unit_price*transaction_qty AS revenue
+FROM workspace.default.bright_coffee_shop_;
+
+---11. Combining functions to get a clean and enhanced data set 
+SELECT 
+transaction_id, 
+transaction_date, 
+transaction_time, 
+transaction_qty,
+store_id,
+store_location,
+product_id, 
+unit_price,
+product_category,
+product_type,
+product_detail,
+---Adding columns to enhance the table for better insights 
+Dayname(transaction_date) AS Day_name, 
+--- 2 New Column
+Monthname(transaction_date) AS Month_name,
+---3 New Column
+Dayofmonth(transaction_date) AS Date_of_month,
+
+--- 4 New Column
+CASE
+WHEN dayname(transaction_date) IN ('Sunday','Saturday') THEN 'Weekend'
+ELSE 'Weekday'
+END AS day_classification,
+
+---5 Time buckets New Column
+
+CASE 
+WHEN date_format(transaction_time, 'HH:mm:ss') BETWEEN '05:00:00' AND '08:59:59' THEN '01. Rush Hour'
+WHEN date_format(transaction_time, 'HH:mm:ss') BETWEEN '09:00:00' AND '11:59:59' THEN '02. Mid Morning'
+WHEN date_format(transaction_time, 'HH:mm:ss') BETWEEN '12:00:00' AND '15:59:59' THEN '03.Afternoon'
+WHEN date_format(transaction_time, 'HH:mm:ss') BETWEEN '16:00:00' AND '18:00:00' THEN '04.Rush Hour'
+ELSE '05.Night'
+END AS time_classification,
+
+
+-- 6 Spend Buckets New Column
+
+CASE 
+WHEN  (transaction_qty*unit_price) <= 50 THEN '1. Low Spender'
+WHEN  (transaction_qty*unit_price) BETWEEN  51 AND 200 THEN '2.Mid Spender'
+WHEN  (transaction_qty*unit_price) BETWEEN 201 AND 300 THEN '3.Moreki'
+ELSE '4.Blesser'
+END AS Spend_classification,
+
+-- 7. Revenue New Column
+transaction_qty*unit_price AS Revenue 
+
+FROM workspace.default.bright_coffee_shop_;
